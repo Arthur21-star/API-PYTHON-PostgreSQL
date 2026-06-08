@@ -1,165 +1,140 @@
-# SGTA — Sistema de Gerenciamento de Tarefas Acadêmicas
+# SGTA - Sistema de Gerenciamento de Tarefas Acadêmicas
 
-API REST desenvolvida em Django para gerenciar tarefas acadêmicas e os usuários responsáveis por elas. O sistema permite cadastrar tarefas com status, prioridade e prazo de entrega, além de filtrar e buscar tarefas de diversas formas.
+## Sobre o Projeto
 
----
+O SGTA (Sistema de Gerenciamento de Tarefas Acadêmicas) é uma API desenvolvida em Python utilizando Django e Django REST Framework para gerenciamento de tarefas acadêmicas.
 
-## Tecnologias utilizadas
-
-- Python 3.x
-- Django 6.0.3
-- Django REST Framework 3.17.0
-- SQLite (banco de dados local para desenvolvimento)
+O sistema permite o cadastro, consulta, atualização e exclusão de usuários e tarefas, utilizando PostgreSQL como banco de dados e Docker para containerização da aplicação.
 
 ---
 
-## Estrutura do projeto
+## Tecnologias Utilizadas
 
-```
-sgta/
-├── backend/
-│   ├── config/          # Configurações do projeto Django (settings, urls, wsgi)
-│   ├── tarefas/         # App de tarefas (model, views, urls)
-│   ├── usuarios/        # App de usuários (model, views, urls)
-│   ├── manage.py
-│   └── requirements.txt
-└── docker-compose.yml
-```
+* Python 3
+* Django
+* Django REST Framework
+* PostgreSQL
+* Docker
+* Docker Compose
+* Git
+* GitHub
 
 ---
 
-## Como executar localmente
-
-**1. Acesse a pasta do backend:**
-```bash
-cd backend
-```
-
-**2. Crie e ative o ambiente virtual:**
-```bash
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# Linux/Mac
-source venv/bin/activate
-```
-
-**3. Instale as dependências:**
-```bash
-pip install -r requirements.txt
-```
-
-**4. Aplique as migrations (cria o banco de dados):**
-```bash
-python manage.py migrate
-```
-
-**5. Inicie o servidor:**
-```bash
-python manage.py runserver
-```
-
-A API estará disponível em `http://127.0.0.1:8000/`.
-
----
-
-## Modelos
-
-### Usuário
-
-| Campo         | Tipo       | Descrição                        |
-|---------------|------------|----------------------------------|
-| `id`          | inteiro    | Identificador único (automático) |
-| `nome`        | texto      | Nome completo do usuário         |
-| `email`       | e-mail     | E-mail único do usuário          |
-| `ativo`       | booleano   | Se o usuário está ativo          |
-| `data_criacao`| data/hora  | Preenchido automaticamente       |
-
-### Tarefa
-
-| Campo                  | Tipo      | Descrição                                                    |
-|------------------------|-----------|--------------------------------------------------------------|
-| `id`                   | inteiro   | Identificador único (automático)                             |
-| `titulo`               | texto     | Título da tarefa                                             |
-| `descricao`            | texto     | Descrição detalhada                                          |
-| `status`               | escolha   | `ABERTA`, `EM_ANDAMENTO`, `CONCLUIDA` ou `CANCELADA`         |
-| `prioridade`           | escolha   | `URGENTE` ou `NAO_URGENTE`                                   |
-| `data_criacao`         | data/hora | Preenchida automaticamente                                   |
-| `data_entrega`         | data      | Prazo de entrega da tarefa                                   |
-| `usuario_responsavel`  | FK        | Usuário responsável (pode ser nulo)                          |
-
----
-
-## Endpoints
-
-### Tarefas
-
-| Método | URL | Descrição |
-|--------|-----|-----------|
-| GET | `/tarefas/` | Lista todas as tarefas |
-| GET | `/tarefas/<id>/` | Retorna uma tarefa pelo ID |
-| GET | `/tarefas/status/<status>/` | Filtra tarefas por status |
-| GET | `/tarefas/prioridade/<prioridade>/` | Filtra tarefas por prioridade |
-| GET | `/tarefas/filtro/<status>/<prioridade>/` | Filtra por status e prioridade combinados |
-| GET | `/tarefas/atrasadas/` | Lista tarefas com prazo vencido e não concluídas |
-| GET | `/tarefas/busca/<termo>/` | Busca tarefas pelo título (parcial, sem distinção de maiúsculas) |
-
-**Valores válidos para `status`:** `ABERTA`, `EM_ANDAMENTO`, `CONCLUIDA`, `CANCELADA`
-
-**Valores válidos para `prioridade`:** `URGENTE`, `NAO_URGENTE`
-
-**Exemplo de resposta — `/tarefas/`:**
-```json
-[
-  {
-    "id": 1,
-    "titulo": "Prova de Algoritmos",
-    "descricao": "Revisão dos conteúdos do semestre",
-    "status": "ABERTA",
-    "prioridade": "URGENTE",
-    "data_criacao": "2026-03-23T14:08:26.752Z",
-    "data_entrega": "2026-04-30",
-    "usuario_responsavel": "Alvaro"
-  }
-]
-```
-
-**Exemplo de resposta — tarefa não encontrada:**
-```json
-{
-  "erro": "Tarefa não encontrada."
-}
-```
-
----
+## Funcionalidades
 
 ### Usuários
 
-| Método | URL | Descrição |
-|--------|-----|-----------|
-| GET | `/usuarios/` | Lista todos os usuários |
-| GET | `/usuarios/<id>/` | Retorna um usuário pelo ID |
+* Cadastrar usuário
+* Consultar usuário
+* Atualizar usuário
+* Excluir usuário
 
-**Exemplo de resposta — `/usuarios/`:**
-```json
-[
-  {
-    "id": 1,
-    "nome": "Alvaro",
-    "email": "alvaro@email.com",
-    "ativo": true,
-    "data_criacao": "2026-03-20T10:00:00.000Z"
-  }
-]
+### Tarefas
+
+* Cadastrar tarefa
+* Consultar tarefa
+* Atualizar tarefa
+* Excluir tarefa
+* Associar tarefas a usuários
+
+---
+
+## Estrutura do Projeto
+
+```text
+SGTA/
+│
+├── config/
+├── tarefas/
+├── usuarios/
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── entrypoint.sh
+└── manage.py
 ```
 
 ---
 
-## Observações
+## Banco de Dados
 
-- O banco de dados padrão é **SQLite**, armazenado no arquivo `backend/db.sqlite3`. É ideal para desenvolvimento e testes locais.
-- O campo `usuario_responsavel` nas respostas de tarefas exibe o **nome** do usuário, não o ID.
-- Tarefas marcadas como `CONCLUIDA` não aparecem na listagem de tarefas atrasadas, mesmo que o prazo tenha vencido.
+O projeto utiliza PostgreSQL executando em container Docker.
+
+Principais vantagens:
+
+* Persistência dos dados
+* Ambiente padronizado
+* Facilidade de implantação
+* Integração com Django ORM
+
+---
+
+## Executando o Projeto com Docker
+
+### Clonar o Repositório
+
+```bash
+git clone https://github.com/Arthur21-star/API-PYTHON-PostgreSQL.git
+```
+
+### Entrar na Pasta do Projeto
+
+```bash
+cd API-PYTHON-PostgreSQL
+```
+
+### Construir e Executar os Containers
+
+```bash
+docker compose up --build
+```
+
+---
+
+## Acesso à Aplicação
+
+Painel Administrativo:
+
+```text
+http://localhost:8000/admin/
+```
+
+API:
+
+```text
+http://localhost:8000/
+```
+
+---
+
+## Docker Hub
+
+Imagem publicada:
+
+```bash
+docker pull arthurzinho/sgta-web
+```
+
+Link:
+
+https://hub.docker.com/repository/docker/arthurzinho/sgta-web
+
+---
+
+## Testes
+
+Executar os testes da aplicação:
+
+```bash
+docker compose exec web python manage.py test
+```
+
+---
+
+## Autor
+
+Arthur Soares
+
+Projeto desenvolvido para a disciplina de Programação Backend.
 
